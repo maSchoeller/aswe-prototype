@@ -1,5 +1,5 @@
 syntax = "proto3";
-
+import "google/protobuf/empty.proto";
 option csharp_namespace = "MachineNodes.Console.Service";
 
 package MachineNodes;
@@ -7,6 +7,7 @@ package MachineNodes;
 
 service LightControlService {
   rpc Connect(ConnectionParameters) returns (ConnectionResponse);
+  rpc GetLightUpdates(google.protobuf.Empty) returns (stream LightColor);
 }
 
 message LightColor {
@@ -21,5 +22,5 @@ message ConnectionParameters {
 
 message ConnectionResponse {
  bool accepted = 1;
- optional string message = 2; 
+ string message = 2; 
 }
