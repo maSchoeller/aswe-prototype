@@ -10,16 +10,16 @@ service LightControlService {
 }
 
 message LightColor {
-  required int32 red = 1;
-  required int32 green = 2;
-  required int32 blue = 3;
+  int32 red = 1;
+  int32 green = 2;
+  int32 blue = 3;
 }
 
 message ConnectionParameters {
-   required string clientName = 1;
+    string clientName = 1;
 }
 
 message ConnectionResponse {
- required  bool accepted = 1;
+ bool accepted = 1;
  optional string message = 2; 
 }

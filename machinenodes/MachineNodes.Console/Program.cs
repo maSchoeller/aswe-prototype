@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Grpc.Net.Client;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
 
@@ -13,7 +14,7 @@ namespace MachineNodes.Console
                    .AddCommandLine(args)
                    .Build();
 
-            var connection = new 
+            var connection = GrpcChannel.ForAddress(config["address"]);
 
         }
     }
