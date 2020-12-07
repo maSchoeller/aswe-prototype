@@ -34,6 +34,11 @@ grpcServer.addService(LightControlServiceService, {
 
                 call.write(color);
             });
+
+        call.on('cancelled', () => {
+            machines.splice(machines.indexOf(clientName), 1);
+            io.emit('machine disconnect', clientName);
+        });
     }
 });
 

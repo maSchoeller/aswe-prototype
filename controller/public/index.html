@@ -43,9 +43,20 @@
             machines.forEach(name => addMachine(name))
         });
         socket.on('machine connect', name => addMachine(name));
+        socket.on('machine disconnect', name => {
+            const machines = [...document.querySelectorAll('.machine')];
+
+            for(const machine of machines) {
+                if (machine.dataset.machine === name) {
+                    document.querySelector('.machines').removeChild(machine);
+                    return;
+                }
+            }
+        });
 
         function addMachine(name) {
             const rootElement = document.createElement('div');
+            rootElement.dataset.machine = name;
             rootElement.className = 'machine';
             const nameElement = document.createElement('div');
             nameElement.textContent = name;
