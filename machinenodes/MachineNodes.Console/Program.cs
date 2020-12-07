@@ -18,13 +18,12 @@ var lampBinding = config.GetSection(ConfigProperties.LampBindings).Get<LampOptio
 
 
 // Bootstrapping LEDs
-var gpioController = new GpioController();
-
-var pwmRed =  new SoftwarePwmChannel(lampBinding.Red, 400, dutyCycle: 1,controller: gpioController);
+GpioController gpioController = new();
+SoftwarePwmChannel pwmRed =  new(lampBinding.Red, 400, dutyCycle: 1,controller: gpioController);
 pwmRed.Start();
-var pwmGreen = new SoftwarePwmChannel(lampBinding.Green, 400, dutyCycle: 1, controller: gpioController);
+SoftwarePwmChannel pwmGreen = new(lampBinding.Green, 400, dutyCycle: 1, controller: gpioController);
 pwmGreen.Start();
-var pwmBlue = new SoftwarePwmChannel(lampBinding.Blue, 400, dutyCycle: 1, controller: gpioController);
+SoftwarePwmChannel pwmBlue = new(lampBinding.Blue, 400, dutyCycle: 1, controller: gpioController);
 pwmBlue.Start();
 
 //Bootstrapping gRPC Connection
@@ -51,11 +50,6 @@ await foreach (var lightUpdate in lightUpdateResult.ResponseStream.ReadAllAsync(
 }
 
 Console.WriteLine("Service finished");
-
-
-
-
-
 
 record LampOptions(int Red, int Green, int Blue);
 static class ConfigProperties
