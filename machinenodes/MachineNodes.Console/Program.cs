@@ -4,10 +4,11 @@ using MachineNodes.Console.Service;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Device.Gpio;
-using System.Device.Pwm;
+using System.Device.Pwm.Drivers;
 using System.IO;
 
 
+Console.WriteLine("Service is starting");
 // Configuration stuff
 var config = new ConfigurationBuilder()
         .AddJsonFile(Path.Combine(Environment.CurrentDirectory, "appsettings.json"), true)
@@ -15,12 +16,15 @@ var config = new ConfigurationBuilder()
         .Build();
 var lampBinding = config.GetSection(ConfigProperties.LampBindings).Get<LampOptions>();
 
+
 // Bootstrapping LEDs
-var pwmRed =PwmChannel.Create(0, lampBinding.Red, dutyCyclePercentage: 1);
+var gpioController = new GpioController();
+
+var pwmRed =  new SoftwarePwmChannel(lampBinding.Red, 400, dutyCycle: 1,controller: gpioController);
 pwmRed.Start();
-var pwmGreen = PwmChannel.Create(0, lampBinding.Green, dutyCyclePercentage: 1);
+var pwmGreen = new SoftwarePwmChannel(lampBinding.Green, 400, dutyCycle: 1, controller: gpioController);
 pwmGreen.Start();
-var pwmBlue  = PwmChannel.Create(0, lampBinding.Blue, dutyCyclePercentage: 1);
+var pwmBlue = new SoftwarePwmChannel(lampBinding.Blue, 400, dutyCycle: 1, controller: gpioController);
 pwmBlue.Start();
 
 //Bootstrapping gRPC Connection
@@ -32,19 +36,28 @@ var connectionResult = await client.ConnectAsync(new() { ClientName = config[Con
 if (!connectionResult.Accepted)
 {
     Console.WriteLine(connectionResult.Message);
+    Console.WriteLine("Service is stopped");
     return;
 }
 
+Console.WriteLine("Service is started");
 //Waiting for light Updates
 var lightUpdateResult = client.GetLightUpdates(new());
 await foreach (var lightUpdate in lightUpdateResult.ResponseStream.ReadAllAsync())
 {
-    //pwmRed.Frequency
+    pwmRed.DutyCycle = lightUpdate.Red / 255;
+    pwmGreen.DutyCycle = lightUpdate.Green / 255;
+    pwmBlue.DutyCycle = lightUpdate.Blue / 255;
 }
 
+Console.WriteLine("Service finished");
+
+
+
+
+
+
 record LampOptions(int Red, int Green, int Blue);
-
-
 static class ConfigProperties
 {
     public const string Address = nameof(Address);
