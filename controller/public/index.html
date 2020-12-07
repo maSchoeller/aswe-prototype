@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eee;
+        }
+        .machines {
+            width: calc(100% - 4rem);
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            background: #fff;
+            border-radius: 0.5rem;
+            box-shadow: 0 0 0.5rem 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .machine {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="machines"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io();
+
+        socket.on('set machines', machines => {
+            machines.forEach(name => addMachine(name))
+        });
+        socket.on('machine connect', name => addMachine(name));
+
+        function addMachine(name) {
+            const rootElement = document.createElement('div');
+            rootElement.className = 'machine';
+            const nameElement = document.createElement('div');
+            nameElement.textContent = name;
+
+            const colorPicker = document.createElement('input')
+            colorPicker.type = 'color';
+            colorPicker.addEventListener('change', event => {
+                const hex = event.target.value;
+
+                const red = parseInt(hex.substr(1, 2), 16);
+                const green = parseInt(hex.substr(3, 2), 16);
+                const blue = parseInt(hex.substr(5, 2), 16);
+
+                const data = {
+                    name,
+                    color: { red, green, blue }
+                };
+
+                console.log(data);
+                socket.emit('color change', data)
+            });
+
+            rootElement.appendChild(nameElement);
+            rootElement.appendChild(colorPicker);
+
+            document.querySelector('.machines').appendChild(rootElement);
+        }
+    </script>
+</body>
+
+</html>

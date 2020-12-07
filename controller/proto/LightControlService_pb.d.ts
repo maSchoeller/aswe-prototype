@@ -56,28 +56,3 @@ export namespace ConnectionParameters {
         clientname: string,
     }
 }
-
-export class ConnectionResponse extends jspb.Message { 
-    getAccepted(): boolean;
-    setAccepted(value: boolean): ConnectionResponse;
-
-    getMessage(): string;
-    setMessage(value: string): ConnectionResponse;
-
-
-    serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): ConnectionResponse.AsObject;
-    static toObject(includeInstance: boolean, msg: ConnectionResponse): ConnectionResponse.AsObject;
-    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-    static serializeBinaryToWriter(message: ConnectionResponse, writer: jspb.BinaryWriter): void;
-    static deserializeBinary(bytes: Uint8Array): ConnectionResponse;
-    static deserializeBinaryFromReader(message: ConnectionResponse, reader: jspb.BinaryReader): ConnectionResponse;
-}
-
-export namespace ConnectionResponse {
-    export type AsObject = {
-        accepted: boolean,
-        message: string,
-    }
-}

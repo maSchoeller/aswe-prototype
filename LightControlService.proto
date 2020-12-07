@@ -6,8 +6,7 @@ package MachineNodes;
 
 
 service LightControlService {
-  rpc Connect(ConnectionParameters) returns (ConnectionResponse);
-  rpc GetLightUpdates(google.protobuf.Empty) returns (stream LightColor);
+  rpc GetLightUpdates(ConnectionParameters) returns (stream LightColor);
 }
 
 message LightColor {
@@ -18,9 +17,4 @@ message LightColor {
 
 message ConnectionParameters {
     string clientName = 1;
-}
-
-message ConnectionResponse {
- bool accepted = 1;
- string message = 2; 
 }
