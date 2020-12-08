@@ -66,6 +66,7 @@ io.on('connection', (socket: Socket) => {
     socket.emit('set machines', machines);
     socket.on('color change', colorInfo => {
         subject.next(colorInfo);
+        socket.broadcast.emit('color change', colorInfo);
     });
 });
 

@@ -53,6 +53,14 @@
                 }
             }
         });
+        socket.on('color change', colorInfo => {
+            const machines = [...document.querySelectorAll('.machine')];
+            const machine = machines.find(el => el.dataset.machine === colorInfo.name);
+            if (machine) {
+                const colorValue = 'rgb(' + colorInfo.color.red.toString(16) + ',' + colorInfo.color.green.toString(16) + ',' + colorInfo.color.blue.toString(16) + ')';
+                machine.querySelector('input').value = colorValue;
+            }
+        });
 
         function addMachine(name) {
             const rootElement = document.createElement('div');
