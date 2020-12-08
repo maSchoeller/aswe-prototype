@@ -70,14 +70,8 @@
                 (el) => el.dataset.machine === colorInfo.name
             );
             if (machine) {
-                const colorValue =
-                    "rgb(" +
-                    colorInfo.color.red.toString(16) +
-                    "," +
-                    colorInfo.color.green.toString(16) +
-                    "," +
-                    colorInfo.color.blue.toString(16) +
-                    ")";
+                const { red, green, blue } = colorInfo.color;
+                const colorValue = '#' + red.toString(16).padStart(2, '0') + green.toString(16).padStart(2, '0') + blue.toString(16).padStart(2, '0');
                 machine.querySelector("input").value = colorValue;
             }
         });
@@ -109,7 +103,6 @@
                     color: { red, green, blue },
                 };
 
-                console.log(data);
                 socket.emit("color change", data);
             });
 
