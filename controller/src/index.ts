@@ -4,7 +4,7 @@ import { LightControlServiceService } from "../proto/LightControlService_grpc_pb
 import { ConnectionParameters, LightColor } from "../proto/LightControlService_pb";
 
 import express from 'express';
-import socketio, { Socket } from 'socket.io';
+import { Server as SocketIOServer, Socket } from 'socket.io';
 import http from 'http';
 import path from 'path';
 
@@ -20,6 +20,7 @@ const grpcServer = new Server();
 grpcServer.addService(LightControlServiceService, {
     getLightUpdates(call: ServerWritableStream<ConnectionParameters, LightColor>) {
         const clientName: string = call.request.getClientname();
+        console.log(`[MACHINE]: <${clientName}> connected`);
         io.emit('machine connect', clientName);
         machines.push(clientName);
 
@@ -38,13 +39,14 @@ grpcServer.addService(LightControlServiceService, {
         call.on('cancelled', () => {
             machines.splice(machines.indexOf(clientName), 1);
             io.emit('machine disconnect', clientName);
+            console.log(`[MACHINE]: <${clientName}> connection lost`);
         });
     }
 });
 
 const grpcPort = process.env.GRPC_PORT || 3001;
 const uri = `localhost:${grpcPort}`;
-console.log(`GRPC server listening on ${uri}`);
+console.log(`GRPC server listening on http://${uri}`);
 grpcServer.bind(uri, ServerCredentials.createInsecure());
 
 grpcServer.start();
@@ -54,13 +56,13 @@ grpcServer.start();
 
 const app = express();
 const httpServer = http.createServer(app);
-const io = new socketio.Server(httpServer);
+const io = new SocketIOServer(httpServer);
 
 const PORT = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
-})
+});
 
 io.on('connection', (socket: Socket) => {
     socket.emit('set machines', machines);

@@ -4,74 +4,99 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
     <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #eee;
-        }
         .machines {
-            width: calc(100% - 4rem);
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 2rem;
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            background: #fff;
-            border-radius: 0.5rem;
-            box-shadow: 0 0 0.5rem 0 rgba(0, 0, 0, 0.2);
+            gap: 1rem;
         }
 
-        .machine {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+        .machine .card-body {
+            text-align: center;
+        }
+
+        .machine .card-body input[type="color"] {
+            width: 4rem;
+            height: 4rem;
         }
     </style>
+    <title>Document</title>
 </head>
 
 <body>
-    <div class="machines"></div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Navbar</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+            aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+                <a class="nav-item nav-link active" href="#">Home <span class="sr-only">(current)</span></a>
+                <a class="nav-item nav-link" href="#">Features</a>
+                <a class="nav-item nav-link" href="#">Pricing</a>
+                <a class="nav-item nav-link disabled" href="#">Disabled</a>
+            </div>
+        </div>
+    </nav>
+    <div class="container my-4">
+        <h1>Maschinensteuerung</h1>
+        <div class="machines my-4"></div>
+    </div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
         var socket = io();
 
-        socket.on('set machines', machines => {
-            machines.forEach(name => addMachine(name))
+        socket.on("set machines", (machines) => {
+            machines.forEach((name) => addMachine(name));
         });
-        socket.on('machine connect', name => addMachine(name));
-        socket.on('machine disconnect', name => {
-            const machines = [...document.querySelectorAll('.machine')];
+        socket.on("machine connect", (name) => addMachine(name));
+        socket.on("machine disconnect", (name) => {
+            const machines = [...document.querySelectorAll(".machine")];
 
-            for(const machine of machines) {
+            for (const machine of machines) {
                 if (machine.dataset.machine === name) {
-                    document.querySelector('.machines').removeChild(machine);
+                    document.querySelector(".machines").removeChild(machine);
                     return;
                 }
             }
         });
-        socket.on('color change', colorInfo => {
-            const machines = [...document.querySelectorAll('.machine')];
-            const machine = machines.find(el => el.dataset.machine === colorInfo.name);
+        socket.on("color change", (colorInfo) => {
+            const machines = [...document.querySelectorAll(".machine")];
+            const machine = machines.find(
+                (el) => el.dataset.machine === colorInfo.name
+            );
             if (machine) {
-                const colorValue = 'rgb(' + colorInfo.color.red.toString(16) + ',' + colorInfo.color.green.toString(16) + ',' + colorInfo.color.blue.toString(16) + ')';
-                machine.querySelector('input').value = colorValue;
+                const colorValue =
+                    "rgb(" +
+                    colorInfo.color.red.toString(16) +
+                    "," +
+                    colorInfo.color.green.toString(16) +
+                    "," +
+                    colorInfo.color.blue.toString(16) +
+                    ")";
+                machine.querySelector("input").value = colorValue;
             }
         });
 
         function addMachine(name) {
-            const rootElement = document.createElement('div');
-            rootElement.dataset.machine = name;
-            rootElement.className = 'machine';
-            const nameElement = document.createElement('div');
-            nameElement.textContent = name;
+            const card = document.createElement("div");
+            card.dataset.machine = name;
+            card.classList.add("machine");
+            card.classList.add("card");
 
-            const colorPicker = document.createElement('input')
-            colorPicker.type = 'color';
-            colorPicker.addEventListener('change', event => {
+            const cardHead = document.createElement("div");
+            cardHead.classList.add("card-header");
+            cardHead.textContent = name;
+
+            const cardBody = document.createElement("div");
+            cardBody.classList.add("card-body");
+
+            const colorPicker = document.createElement("input");
+            colorPicker.type = "color";
+            colorPicker.addEventListener("change", (event) => {
                 const hex = event.target.value;
 
                 const red = parseInt(hex.substr(1, 2), 16);
@@ -80,17 +105,19 @@
 
                 const data = {
                     name,
-                    color: { red, green, blue }
+                    color: { red, green, blue },
                 };
 
                 console.log(data);
-                socket.emit('color change', data)
+                socket.emit("color change", data);
             });
 
-            rootElement.appendChild(nameElement);
-            rootElement.appendChild(colorPicker);
+            cardBody.appendChild(colorPicker);
 
-            document.querySelector('.machines').appendChild(rootElement);
+            card.appendChild(cardHead);
+            card.appendChild(cardBody);
+
+            document.querySelector(".machines").appendChild(card);
         }
     </script>
 </body>
