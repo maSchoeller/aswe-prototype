@@ -1,9 +1,7 @@
 syntax = "proto3";
-import "google/protobuf/empty.proto";
 option csharp_namespace = "MachineNodes.Console.Service";
 
 package MachineNodes;
-
 
 service LightControlService {
   rpc GetLightUpdates(ConnectionParameters) returns (stream LightColor);
