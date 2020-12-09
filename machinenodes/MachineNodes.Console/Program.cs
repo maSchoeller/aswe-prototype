@@ -18,13 +18,13 @@ var lampBinding = config.GetSection(ConfigProperties.LampBindings).Get<LampOptio
 
 
 // Bootstrapping LEDs
-// GpioController gpioController = new();
-// SoftwarePwmChannel pwmRed =  new(lampBinding.Red, 400, dutyCycle: 1,controller: gpioController);
-// pwmRed.Start();
-// SoftwarePwmChannel pwmGreen = new(lampBinding.Green, 400, dutyCycle: 1, controller: gpioController);
-// pwmGreen.Start();
-// SoftwarePwmChannel pwmBlue = new(lampBinding.Blue, 400, dutyCycle: 1, controller: gpioController);
-// pwmBlue.Start();
+GpioController gpioController = new GpioController(PinNumberingScheme.Logical);
+SoftwarePwmChannel pwmRed =  new(lampBinding.Red, 500, dutyCycle: 1,controller: gpioController, usePrecisionTimer:true);
+pwmRed.Start();
+SoftwarePwmChannel pwmGreen = new(lampBinding.Green, 500, dutyCycle: 1, controller: gpioController, usePrecisionTimer: true);
+pwmGreen.Start();
+SoftwarePwmChannel pwmBlue = new(lampBinding.Blue, 500, dutyCycle: 1, controller: gpioController, usePrecisionTimer: true);
+pwmBlue.Start();
 
 var httpHandler = new HttpClientHandler();
 // Return true to allow certificates that are untrusted/invalid
@@ -44,9 +44,12 @@ var lightUpdateResult = client.GetLightUpdates(new ConnectionParameters { Client
 await foreach (var lightUpdate in lightUpdateResult.ResponseStream.ReadAllAsync())
 {
     Console.WriteLine($"Color Update: rgb({lightUpdate.Red}, {lightUpdate.Green}, {lightUpdate.Blue})");
-    // pwmRed.DutyCycle = lightUpdate.Red / 255;
-    // pwmGreen.DutyCycle = lightUpdate.Green / 255;
-    // pwmBlue.DutyCycle = lightUpdate.Blue / 255;
+
+    pwmRed.DutyCycle = lightUpdate.Red / 255d;
+    pwmGreen.DutyCycle = lightUpdate.Green / 255d;
+    pwmBlue.DutyCycle = lightUpdate.Blue / 255d;
+    Console.WriteLine($"Set DutyCycle: [R:{pwmRed.DutyCycle},G:{pwmGreen.DutyCycle},B:{pwmBlue.DutyCycle}]");
+
 }
 
 Console.WriteLine("Service finished");

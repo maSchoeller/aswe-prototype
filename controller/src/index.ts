@@ -45,8 +45,8 @@ grpcServer.addService(LightControlServiceService, {
 });
 
 const grpcPort = process.env.GRPC_PORT || 3001;
-const uri = `localhost:${grpcPort}`;
-console.log(`GRPC server listening on http://${uri}`);
+const uri = `0.0.0.0:${grpcPort}`;
+console.log(`GRPC server listening on ${uri}`);
 grpcServer.bind(uri, ServerCredentials.createInsecure());
 
 grpcServer.start();
